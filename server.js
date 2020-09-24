@@ -40,7 +40,18 @@ connection.connect(function(err) {
 app.get("/", function(req, res) {
   connection.query("SELECT * FROM burgers;", function(err, data) {
     if (err) {
-      console.log("Error is ",err);
+      if (err.code === "ER_NO_SUCH_TABLE") {
+        console.log("creating table");
+        connection.query("CREATE TABLE burgers (id int NOT NULL AUTO_INCREMENT, burger varchar(255) NOT NULL, eaten BOOLEAN, PRIMARY KEY (id))", function(err, result) {
+          if (err) {
+            console.log(err);
+            return res.status(500).end();
+          }
+      
+          return res.status(500).end();
+        });
+        
+      }
       return res.status(500).end();
     }
 
@@ -55,7 +66,7 @@ app.post("/api/burgers", function(req, res) {
   }
   connection.query("INSERT INTO burgers (burger, eaten) VALUES (?, ?)", [req.body.burger, false], function(err, result) {
     if (err) {
-      console.log(err);
+
       return res.status(500).end();
     }
 
