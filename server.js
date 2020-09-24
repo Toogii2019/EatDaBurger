@@ -16,11 +16,11 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
 var connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "rootadmin",
-  database: "burgers_db"
+  host: process.env.DBHOST || "localhost",
+  port: process.env.DBPORT || 3306,
+  user: process.env.DBUNAME || "root",
+  password: process.env.DBPWD || "rootadmin",
+  database: process.env.DBNAME || "burgers_db"
 });
 
 connection.connect(function(err) {
@@ -32,7 +32,7 @@ connection.connect(function(err) {
   console.log("connected as id " + connection.threadId);
 });
 
-// Use Handlebars to render the main index.html page with the plans in it.
+// Use Handlebars to render the main index.html page with the burgers in it.
 app.get("/", function(req, res) {
   connection.query("SELECT * FROM burgers;", function(err, data) {
     if (err) {
@@ -45,35 +45,21 @@ app.get("/", function(req, res) {
 
 // Create a new burger
 app.post("/api/burgers", function(req, res) {
+  if (! req.body.burger) {
+    return res.status(404).end();
+  }
   connection.query("INSERT INTO burgers (burger, eaten) VALUES (?, ?)", [req.body.burger, false], function(err, result) {
     if (err) {
       console.log(err);
       return res.status(500).end();
     }
 
-    // Send back the ID of the new plan
     res.json({ id: result.insertId });
     console.log({ id: result.insertId });
   });
 });
 
-// Update a plan
-app.put("/api/plans/:id", function(req, res) {
-  connection.query("UPDATE plans SET plan = ? WHERE id = ?", [req.body.plan, req.params.id], function(err, result) {
-    if (err) {
-      // If an error occurred, send a generic server failure
-      return res.status(500).end();
-    }
-    else if (result.changedRows === 0) {
-      // If no rows were changed, then the ID must not exist, so 404
-      return res.status(404).end();
-    }
-    res.status(200).end();
-
-  });
-});
-
-// Delete a plan
+// Eat a burger
 app.get("/api/burger/:id", function(req, res) {
   connection.query("UPDATE burgers SET eaten = ? WHERE id = ?", [true, req.params.id], function(err, result) {
     if (err) {

@@ -1,35 +1,43 @@
 <h1>Eat a burger</h1>
 
-<ul>
+
+<section class="sections">
+  <ul class="eaten">
   {{#each burgers}}
-  {{#if this.eaten}}
-  <li class="eaten">
+  {{#if this.eaten}} 
+  <li>
     <p>
       {{this.burger}}
     </p>
   </li>
-  {{else}}
-  <li class="not-eaten">
+  {{/if}}
+  {{/each}}
+  </ul>
+
+  <ul class="not-eaten">
+  {{#each burgers}}
+  {{#unless this.eaten}} 
+  <li>
     <p>
       {{this.burger}}
       <button data-burgerid="{{this.id}}" class="devour">Devour it!</button>
     </p>
   </li>
-  {{/if}}
-
+  {{/unless}}
   {{/each}}
-</ul>
+  </ul>
+</section>
 
 <form id="createburger" class="button-size">
   <h2>Order a Burger</h2>
-  <textarea type="text" name="burger"></textarea>
+  <textarea type="text" name="burger"></textarea><br>
   <button type="submit">Order Burger!</button>
 </form>
 
 <script type="text/javascript">
   $(".devour").on("click", function(event) {
     // Get the ID from the button.
-    // This is shorthand for $(this).attr("data-planid")
+    // This is shorthand for $(this).attr("data-burgerid")
     var id = $(this).data("burgerid");
 
     // Send the DELETE request.
@@ -48,7 +56,7 @@
     // Make sure to preventDefault on a submit event.
     event.preventDefault();
 
-    // [name=plan] will find an element with a "name" attribute equal to the string "plan"
+    // [name=burger] will find an element with a "name" attribute equal to the string "burger"
     var newPlan = {
       burger: $("#createburger [name=burger]").val().trim()
     };
@@ -67,24 +75,25 @@
   });
 </script>
 <style>
-ul {
+
+body {
+  background-color: rgb(218, 175, 172)
+}
+
+section {
   display: grid;
   grid-template-columns: auto auto;
   grid-template-areas: 
-           'not-eaten eaten';
+          'not-eaten eaten';
+                  
 }
-
 .not-eaten {
   grid-area: not-eaten;
-  
 }
 
 .eaten {
   grid-area: eaten;
-  height: 100px;
 }
-
-
 
 #createburger {
   text-align: center;
@@ -92,6 +101,24 @@ ul {
 
 h1 {
   text-align: center;
+}
+
+.eaten > li {
+  background-color: rgb(143, 136, 136);
+  height: 50px;
+  text-align: center;
+  color: white;
+}
+
+.not-eaten > li {
+  background-color: rgb(247, 247, 247);
+  height: 50px;
+  text-align: center;
+}
+
+.devour {
+  background-color: green;
+  color: white;
 }
 
 </style>
