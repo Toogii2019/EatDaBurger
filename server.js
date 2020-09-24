@@ -15,6 +15,10 @@ app.use(express.json());
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
+// Create Table
+
+
+
 var connection = mysql.createConnection({
   host: process.env.DBHOST || "localhost",
   port: process.env.DBPORT || 3306,
@@ -36,6 +40,7 @@ connection.connect(function(err) {
 app.get("/", function(req, res) {
   connection.query("SELECT * FROM burgers;", function(err, data) {
     if (err) {
+      console.log(err);
       return res.status(500).end();
     }
 
