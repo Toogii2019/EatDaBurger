@@ -38,8 +38,7 @@
 
 ## Usage
 
- Clone the development branch and create merge request
-
+ The program should have database created before running when executed in local server
 
 ## License
 
