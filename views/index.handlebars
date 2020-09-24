@@ -1,0 +1,97 @@
+<h1>Eat a burger</h1>
+
+<ul>
+  {{#each burgers}}
+  {{#if this.eaten}}
+  <li class="eaten">
+    <p>
+      {{this.burger}}
+    </p>
+  </li>
+  {{else}}
+  <li class="not-eaten">
+    <p>
+      {{this.burger}}
+      <button data-burgerid="{{this.id}}" class="devour">Devour it!</button>
+    </p>
+  </li>
+  {{/if}}
+
+  {{/each}}
+</ul>
+
+<form id="createburger" class="button-size">
+  <h2>Order a Burger</h2>
+  <textarea type="text" name="burger"></textarea>
+  <button type="submit">Order Burger!</button>
+</form>
+
+<script type="text/javascript">
+  $(".devour").on("click", function(event) {
+    // Get the ID from the button.
+    // This is shorthand for $(this).attr("data-planid")
+    var id = $(this).data("burgerid");
+
+    // Send the DELETE request.
+    $.ajax("/api/burger/" + id, {
+      type: "GET"
+    }).then(
+      function() {
+        console.log("deleted id ", id);
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+
+  $("#createburger").on("submit", function(event) {
+    // Make sure to preventDefault on a submit event.
+    event.preventDefault();
+
+    // [name=plan] will find an element with a "name" attribute equal to the string "plan"
+    var newPlan = {
+      burger: $("#createburger [name=burger]").val().trim()
+    };
+
+    // Send the POST request.
+    $.ajax("/api/burgers", {
+      type: "POST",
+      data: newPlan
+    }).then(
+      function() {
+        console.log("created new burger");
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+</script>
+<style>
+ul {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-areas: 
+           'not-eaten eaten';
+}
+
+.not-eaten {
+  grid-area: not-eaten;
+  
+}
+
+.eaten {
+  grid-area: eaten;
+  height: 100px;
+}
+
+
+
+#createburger {
+  text-align: center;
+}
+
+h1 {
+  text-align: center;
+}
+
+</style>
